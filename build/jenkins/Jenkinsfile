@@ -95,6 +95,7 @@ pipeline {
                 }
                 agent {
                     dockerfile {
+                        label 'Windows'
                         dir 'build/jenkins/windows'
                     }
                 }
