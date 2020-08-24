@@ -102,12 +102,19 @@ pipeline {
                     stage('resip'){
                         steps {
                             bat "msbuild -m -p:Configuration=${CONFIGURATION};Platform=${PLATFORM} reSIProcate_16_0.sln"
+                            dir("${PLATFORM}/${CONFIGURATION}"){
+                                bat 'resip_test.exe'
+                                bat 'basicCall.exe'
+                            }
                         }
                     }
                     stage('reTurn'){
                         steps {
                             dir('reTurn'){
                                 bat "msbuild -m -p:Configuration=${CONFIGURATION};Platform=${PLATFORM} reTurn_16_0.sln"
+                                dir("${PLATFORM}/${CONFIGURATION}"){
+                                    bat 'stunTestVectors.exe'
+                                }
                             }
                         }
                     }
@@ -128,7 +135,7 @@ pipeline {
                         )
                     }
                     cleanup {
-                        cleanWs()
+                        bat 'git clean -dfx'
                     }
                 }
             }
