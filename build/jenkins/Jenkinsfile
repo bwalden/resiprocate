@@ -5,7 +5,7 @@ pipeline {
         timestamps()
     }
     stages {
-        stage('Linux'){
+        /*stage('Linux'){
             matrix {
                 axes {
                     axis {
@@ -80,7 +80,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
         stage('Windows'){
             matrix {
                 axes {
