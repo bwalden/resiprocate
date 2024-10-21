@@ -1729,11 +1729,6 @@ InviteSession::dispatchSentReinvite(const SipMessage& msg)
          handler->onOfferRejected(getSessionHandle(), &msg);
          break;
 
-      case OnAck:
-      case OnAckAnswer:
-         mCurrentRetransmit200 = 0; //stop the 200 retransmit timer
-      break;
-
       default:
          dispatchOthers(msg);
          break;
@@ -2166,9 +2161,20 @@ InviteSession::dispatchOthers(const SipMessage& msg)
       case MESSAGE:
          dispatchMessage(msg);
          break;
-	  case ACK:
-		  // Ignore duplicate ACKs from 2xx reTransmissions
-		  break;
+      case ACK:
+         if (msg.isRequest())
+         {
+            // Not checking for strict equality, since request may have been digest challenged
+            if (mLastRemoteSessionModification->header(h_CSeq).sequence() > msg.header(h_CSeq).sequence())
+            {
+               InfoLog(<< "dropped stale ACK");
+            }
+            else
+            {
+               mCurrentRetransmit200 = 0; // stop the 200 retransmit timer
+            }
+         }
+         break;
       default:
          // handled in Dialog
          WarningLog (<< "DUM delivered a "
